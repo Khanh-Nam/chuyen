@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use - Student Management System</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Link đến file CSS -->
+      <link rel="stylesheet" href="static/howtouse.css">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <h1 class="logo">Student Management System</h1>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url_for('contact') }}"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Log In</a></li>
+                    <li><a href="{{ url_for('how_to_use') }}"><i class="fas fa-question-circle"></i> How to Use</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>How to Use</h2>
+        <p>Welcome to the Student Management System. Below are the steps to effectively use this system:</p>
+        <ol>
+            <li>
+                <strong>Registration:</strong> If you are a new user, please sign up by clicking on the "Sign Up" link on the login page. Fill in the required information and submit the form.
+            </li>
+            <li>
+                <strong>Log In:</strong> After registering, log in with your email and password. If you forget your password, you can reset it using the "Reset Password" link.
+            </li>
+            <li>
+                <strong>Manage Students:</strong> Once logged in, you can add, update, or remove student records. Navigate to the respective sections in the dashboard.
+            </li>
+            <li>
+                <strong>Contact Support:</strong> If you have any questions or feedback, feel free to reach out using the "Contact Us" page.
+            </li>
+            <li>
+                <strong>Logout:</strong> Always remember to log out when you are done using the system for security purposes.
+            </li>
+        </ol>
+    </div>
+</body>
+</html>

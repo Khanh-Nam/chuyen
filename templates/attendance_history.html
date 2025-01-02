@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='history.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="header-container">
+            <a href="/index" class="back-to-home"><i>&#8592;</i> Trang chủ</a>
+            <h2>Attendance History</h2>
+        </div>
+    </header>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <form method="get" action="/attendance_history">
+            <div class="filter-item">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" value="{{ request.args.get('name', '') }}" placeholder="Enter Name">
+            </div>
+            <div class="filter-item">
+                <label for="student_id">Student ID</label>
+                <input type="text" id="student_id" name="student_id" value="{{ request.args.get('student_id', '') }}" placeholder="Enter Student ID">
+            </div>
+            <div class="filter-item">
+                <label for="attendance_type">Attendance Type</label>
+                <select id="attendance_type" name="attendance_type">
+                    <option value="">All</option>
+                    <option value="Present" {% if request.args.get('attendance_type') == 'Present' %}selected{% endif %}>Present</option>
+                    <option value="Absent" {% if request.args.get('attendance_type') == 'Absent' %}selected{% endif %}>Absent</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="start_date">Start Date</label>
+                <input type="date" id="start_date" name="start_date" value="{{ request.args.get('start_date', '') }}">
+            </div>
+            <div class="filter-item">
+                <label for="end_date">End Date</label>
+                <input type="date" id="end_date" name="end_date" value="{{ request.args.get('end_date', '') }}">
+            </div>
+            <div class="filter-item">
+                <button type="submit">Apply Filters</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <div class="history-container">
+            {% if attendance_data %}
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Student ID</th>
+                            <th>Capture Time</th>
+                            <th>Attendance Type</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_data %}
+                            <tr>
+                                <td>{{ record['Name'] }}</td>
+                                <td>{{ record['Student ID'] }}</td>
+                                <td>{{ record['Capture Time'] }}</td>
+                                <td>{{ record['Attendance Type'] }}</td>
+                                <td>{{ record['Duration'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-data-message">No attendance records found.</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Attendance Management System &copy; 2024</p>
+    </footer>
+</body>
+</html>

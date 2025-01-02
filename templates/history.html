@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance History</title>
+    <link rel="stylesheet" href="static/history.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="header-container">
+            <a href="/index" class="back-to-home"><i>&#8592;</i> Trang chủ</a>
+            <h2>Attendance History</h2>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="history-container">
+            <!-- Filter Form -->
+            <form method="get" action="/attendance_history">
+                <input type="text" name="name" placeholder="Enter Name" value="{{ request.args.get('name', '') }}">
+                <input type="text" name="student_id" placeholder="Enter Student ID" value="{{ request.args.get('student_id', '') }}">
+                <select name="attendance_type">
+                    <option value="">Select Attendance Type</option>
+                    <option value="Present" {% if request.args.get('attendance_type') == 'Present' %}selected{% endif %}>Present</option>
+                    <option value="Absent" {% if request.args.get('attendance_type') == 'Absent' %}selected{% endif %}>Absent</option>
+                </select>
+                <input type="date" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                <input type="date" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                <button type="submit">Filter</button>
+            </form>
+
+            <!-- Attendance Data Table -->
+            {% if attendance_data %}
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Student ID</th>
+                            <th>Capture Time</th>
+                            <th>Attendance Type</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_data %}
+                            <tr>
+                                <td>{{ record['Name'] }}</td>
+                                <td>{{ record['Student ID'] }}</td>
+                                <td>{{ record['Capture Time'] }}</td>
+                                <td>{{ record['Attendance Type'] }}</td>
+                                <td>{{ record['Duration'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-data-message">No attendance records found.</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Attendance Management System &copy; 2024</p>
+    </footer>
+</body>
+</html>

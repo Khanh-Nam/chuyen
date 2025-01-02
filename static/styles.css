@@ -1,0 +1,73 @@
+/* Căn chỉnh navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Đẩy tên hệ thống sang trái và menu sang phải */
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+}
+
+.navbar .logo {
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+}
+
+.navbar nav ul {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar nav ul li {
+    margin-left: 20px;
+}
+
+.navbar nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    transition: color 0.3s;
+}
+
+.navbar nav ul li a:hover {
+    color: #ffcc00;
+}
+
+/* Style cho phần nội dung */
+.welcome-section {
+    padding: 40px;
+    background-color: #f4f4f4;
+}
+
+.welcome-section .content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.welcome-section h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.welcome-section p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.welcome-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.welcome-section ul li {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.welcome-section ul li i {
+    color: green;
+    margin-right: 10px;
+}

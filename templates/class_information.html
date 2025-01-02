@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Information</title>
+    <link rel="stylesheet" href="static/class.css">
+</head>
+
+<body>
+    <header id="header">
+        <h2>Real-time Student Attendance</h2>
+        <div id="userControls">
+            <span class="user-email">[User Email]</span>
+            <a href="/index">Trang chủ</a>
+            <a href="/history">Lịch sử</a>
+            <a href="/logout" id="logoutButton">Đăng xuất</a>
+        </div>
+    </header>
+
+    <main>
+        <h3>Class List</h3>
+        <table id="classTable">
+            <thead>
+                <tr>
+                    <th>Mã Lớp</th>
+                    <th>Tên Lớp</th>
+                    <th>Khoa</th>
+                    <th>Giảng Viên</th>
+                    <th>Năm Học</th>
+                    <th>Thời Gian Học</th>
+                    <th>Phòng Học</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class_info in class_data %}
+                    <tr>
+                        <td>{{ class_info['Mã Lớp'] }}</td>
+                        <td>{{ class_info['Tên Lớp'] }}</td>
+                        <td>{{ class_info['Khoa'] }}</td>
+                        <td>{{ class_info['Giảng Viên'] }}</td>
+                        <td>{{ class_info['Năm Học'] }}</td>
+                        <td>{{ class_info['Thời Gian Học'] }}</td>
+                        <td>{{ class_info['Phòng Học'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <section id="addClassSection">
+            <h3>Thêm Lớp Học Mới</h3>
+            <form id="addClassForm">
+                <label for="classCode">Mã Lớp:</label>
+                <input type="text" id="classCode" name="classCode" required>
+
+                <label for="className">Tên Lớp:</label>
+                <input type="text" id="className" name="className" required>
+
+                <label for="department">Khoa:</label>
+                <input type="text" id="department" name="department" required>
+
+                <label for="teacher">Giảng Viên:</label>
+                <input type="text" id="teacher" name="teacher" required>
+
+                <label for="year">Năm Học:</label>
+                <input type="text" id="year" name="year" required>
+
+                <label for="schedule">Thời Gian Học:</label>
+                <input type="text" id="schedule" name="schedule" required>
+
+                <label for="classroom">Phòng Học:</label>
+                <input type="text" id="classroom" name="classroom" required>
+
+                <button type="submit">Thêm Lớp Học</button>
+            </form>
+            <div id="statusMessage"></div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusMessage = document.getElementById('statusMessage');
+
+            // Load current class list
+            fetch('/class_information')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('classTable').querySelector('tbody');
+
+                    if (data.error) {
+                        statusMessage.textContent = 'Error loading class data: ' + data.error;
+                        statusMessage.style.color = 'red';
+                        return;
+                    }
+
+                    data.forEach(classInfo => {
+                        const row = `
+                            <tr>
+                                <td>${classInfo['Mã Lớp']}</td>
+                                <td>${classInfo['Tên Lớp']}</td>
+                                <td>${classInfo['Khoa']}</td>
+                                <td>${classInfo['Giảng Viên']}</td>
+                                <td>${classInfo['Năm Học']}</td>
+                                <td>${classInfo['Thời Gian Học']}</td>
+                                <td>${classInfo['Phòng Học']}</td>
+                            </tr>`;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                })
+                .catch(error => {
+                    statusMessage.textContent = 'Error loading class data!';
+                    statusMessage.style.color = 'red';
+                });
+
+            // Handle adding new class
+            const addClassForm = document.getElementById('addClassForm');
+
+            addClassForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const newClass = {
+                    'Mã Lớp': document.getElementById('classCode').value,
+                    'Tên Lớp': document.getElementById('className').value,
+                    'Khoa': document.getElementById('department').value,
+                    'Giảng Viên': document.getElementById('teacher').value,
+                    'Năm Học': document.getElementById('year').value,
+                    'Thời Gian Học': document.getElementById('schedule').value,
+                    'Phòng Học': document.getElementById('classroom').value
+                };
+
+                fetch('/class_information', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newClass)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        statusMessage.textContent = 'Error adding new class: ' + data.error;
+                        statusMessage.style.color = 'red';
+                        return;
+                    }
+
+                    // Update table with new class
+                    const tableBody = document.getElementById('classTable').querySelector('tbody');
+                    const row = `
+                        <tr>
+                            <td>${data['Mã Lớp']}</td>
+                            <td>${data['Tên Lớp']}</td>
+                            <td>${data['Khoa']}</td>
+                            <td>${data['Giảng Viên']}</td>
+                            <td>${data['Năm Học']}</td>
+                            <td>${data['Thời Gian Học']}</td>
+                            <td>${data['Phòng Học']}</td>
+                        </tr>`;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+
+                    addClassForm.reset();
+                    statusMessage.textContent = 'Class added successfully!';
+                    statusMessage.style.color = 'green';
+                })
+                .catch(error => {
+                    statusMessage.textContent = 'Error adding new class!';
+                    statusMessage.style.color = 'red';
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

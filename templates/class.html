@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Information</title>
+    <link rel="stylesheet" href="static/class.css">
+</head>
+
+<body>
+    <!-- Header with back button -->
+    <header id="header">
+        <div class="header-container">
+            <a href="index.html" class="back-to-home"><i>&#8592;</i> Quay lại Trang Chủ</a>
+            <h2>Attendance History</h2>
+        </div>
+    </header>
+
+    <main>
+        <h3>Class List</h3>
+        <table id="classTable">
+            <thead>
+                <tr>
+                    <th>Mã Lớp</th>
+                    <th>Tên Lớp</th>
+                    <th>Khoa</th>
+                    <th>Giảng Viên</th>
+                    <th>Năm Học</th>
+                    <th>Thời Gian Học</th>
+                    <th>Phòng Học</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Class data will be dynamically inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Form to add new class -->
+        <section id="addClassSection">
+            <h3>Thêm Lớp Học Mới</h3>
+            <form id="addClassForm">
+                <label for="classCode">Mã Lớp:</label>
+                <input type="text" id="classCode" name="classCode" required>
+
+                <label for="className">Tên Lớp:</label>
+                <input type="text" id="className" name="className" required>
+
+                <label for="department">Khoa:</label>
+                <input type="text" id="department" name="department" required>
+
+                <label for="teacher">Giảng Viên:</label>
+                <input type="text" id="teacher" name="teacher" required>
+
+                <label for="year">Năm Học:</label>
+                <input type="text" id="year" name="year" required>
+
+                <label for="schedule">Thời Gian Học:</label>
+                <input type="text" id="schedule" name="schedule" required>
+
+                <label for="classroom">Phòng Học:</label>
+                <input type="text" id="classroom" name="classroom" required>
+
+                <button type="submit">Thêm Lớp Học</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load existing class information
+            fetch('/class_information')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('classTable').querySelector('tbody');
+                    data.forEach(classInfo => {
+                        const row = `
+                            <tr>
+                                <td>${classInfo['Mã Lớp']}</td>
+                                <td>${classInfo['Tên Lớp']}</td>
+                                <td>${classInfo['Khoa']}</td>
+                                <td>${classInfo['Giảng Viên']}</td>
+                                <td>${classInfo['Năm Học']}</td>
+                                <td>${classInfo['Thời Gian Học']}</td>
+                                <td>${classInfo['Phòng Học']}</td>
+                            </tr>`;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                })
+                .catch(error => console.error('Error loading class data:', error));
+
+            // Handle form submission to add new class
+            const addClassForm = document.getElementById('addClassForm');
+            addClassForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const newClass = {
+                    'Mã Lớp': document.getElementById('classCode').value,
+                    'Tên Lớp': document.getElementById('className').value,
+                    'Khoa': document.getElementById('department').value,
+                    'Giảng Viên': document.getElementById('teacher').value,
+                    'Năm Học': document.getElementById('year').value,
+                    'Thời Gian Học': document.getElementById('schedule').value,
+                    'Phòng Học': document.getElementById('classroom').value
+                };
+
+                fetch('/add_class', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newClass)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update table with new class data
+                    const tableBody = document.getElementById('classTable').querySelector('tbody');
+                    const row = `
+                        <tr>
+                            <td>${data['Mã Lớp']}</td>
+                            <td>${data['Tên Lớp']}</td>
+                            <td>${data['Khoa']}</td>
+                            <td>${data['Giảng Viên']}</td>
+                            <td>${data['Năm Học']}</td>
+                            <td>${data['Thời Gian Học']}</td>
+                            <td>${data['Phòng Học']}</td>
+                        </tr>`;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                    addClassForm.reset();
+                })
+                .catch(error => console.error('Error adding new class:', error));
+            });
+        });
+    </script>
+</body>
+
+</html>

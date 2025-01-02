@@ -1,0 +1,7 @@
+
+    train: C:/Users/admin/Desktop/video/anhsinhvien/train/images
+    val: C:/Users/admin/Desktop/video/anhsinhvien/val/images
+
+    nc: 1  # number of classes
+    names: ['face']  # class names
+    

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Sinh Viên</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f4f6f9;
+            --text-color: #333;
+            --error-color: #e74c3c;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+        }
+        .container {
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+        }
+        .container::before {
+            background-color: var(--primary-color);
+            top: -150px;
+            left: -150px;
+            opacity: 0.1;
+        }
+        .container::after {
+            background-color: var(--secondary-color);
+            bottom: -150px;
+            right: -150px;
+            opacity: 0.1;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+        .form-header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .form-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+            background-color: #fff;
+        }
+        .form-group i {
+            position: absolute;
+            left: 0.75rem;
+            top: 2.25rem;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus + i {
+            color: var(--primary-color);
+        }
+        .camera-container {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        #video {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .image-preview {
+            margin-top: 1rem;
+        }
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        .action-buttons .btn {
+            width: 48%;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e0e0e0;
+            margin-top: 1rem;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress {
+            width: 0;
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.3) 50%,
+                rgba(255,255,255,0.1) 100%
+            );
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .error-message i {
+            margin-right: 0.25rem;
+        }
+        .home-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            z-index: 10;
+        }
+        .home-button:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+        .home-button:active {
+            transform: translateY(0);
+        }
+        .home-button i {
+            margin-right: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 2rem;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .form-header h1 {
+                font-size: 2rem;
+            }
+            .home-button {
+                top: 0.5rem;
+                left: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="home-button" onclick="goToHomePage()">
+            <i class="fas fa-home"></i> Trang chủ
+        </button>
+        <div class="form-header">
+            <h1>Đăng Ký Sinh Viên</h1>
+            <p>Vui lòng điền thông tin và chụp ảnh</p>
+        </div>
+        <form id="studentForm">
+            <div class="form-group">
+                <label for="studentName">Tên Sinh Viên</label>
+                <input type="text" id="studentName" required>
+                <i class="fas fa-user"></i>
+                <div class="error-message" id="nameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="studentID">Mã Sinh Viên</label>
+                <input type="text" id="studentID" required>
+                <i class="fas fa-id-card"></i>
+                <div class="error-message" id="idError"></div>
+            </div>
+            <div class="camera-container">
+                <button type="button" id="startCameraBtn" class="btn">
+                    <i class="fas fa-camera"></i> Mở Camera và Chụp Ảnh
+                </button>
+                <video id="video" autoplay style="display: none;"></video>
+                <div class="image-preview" style="display: none;">
+                    <img id="capturedImage" alt="Ảnh đã chụp">
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="captureProgress"></div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button type="submit" id="submitBtn" class="btn" disabled>
+                    <i class="fas fa-paper-plane"></i> Gửi Thông Tin
+                </button>
+                <button type="button" id="resetBtn" class="btn">
+                    <i class="fas fa-redo"></i> Làm Mới
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const video = document.getElementById('video');
+        const capturedImage = document.getElementById('capturedImage');
+        const studentNameInput = document.getElementById('studentName');
+        const studentIDInput = document.getElementById('studentID');
+        const submitBtn = document.getElementById('submitBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const captureProgress = document.getElementById('captureProgress');
+        const nameError = document.getElementById('nameError');
+        const idError = document.getElementById('idError');
+
+        let mediaStream;
+        let captureInterval;
+        let capturedImages = 0;
+        const maxImages = 30;
+        const imageFolderPath = `C:\\Users\\admin\\Desktop\\video\\anhsinhvien\\`;
+
+        function validateForm() {
+            let isValid = true;
+            if (studentNameInput.value.trim() === '') {
+                nameError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Vui lòng nhập tên sinh viên';
+                isValid = false;
+            } else {
+                nameError.textContent = '';
+            }
+            if (studentIDInput.value.trim() === '') {
+                idError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Vui lòng nhập mã sinh viên';
+                isValid = false;
+            } else {
+                idError.textContent = '';
+            }
+            return isValid;
+        }
+
+        startCameraBtn.addEventListener('click', async () => {
+            if (!validateForm()) return;
+
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = mediaStream;
+                video.style.display = 'block';
+                startCameraBtn.style.display = 'none';
+                startAutoCapture();
+            } catch (err) {
+                alert('Không thể truy cập camera: ' + err);
+            }
+        });
+
+        function startAutoCapture() {
+            captureInterval = setInterval(() => {
+                captureImage();
+                capturedImages++;
+                updateProgress();
+
+                if (capturedImages >= maxImages) {
+                    clearInterval(captureInterval);
+                    stopCamera();
+                    submitBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        function captureImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const imgData = canvas.toDataURL('image/png');
+
+            capturedImage.src = imgData;
+            capturedImage.parentElement.style.display = 'block';
+
+            const fileName = `${studentIDInput.value}_${studentNameInput.value}_${capturedImages}.png`;
+            const filePath = `${imageFolderPath}${fileName}`;
+            console.log(`Lưu ảnh vào: ${filePath}`);
+        }
+
+        function updateProgress() {
+            const progress = (capturedImages / maxImages) * 100;
+            captureProgress.style.width = `${progress}%`;
+        }
+
+        function stopCamera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            video.style.display = 'none';
+            startCameraBtn.style.display = 'block';
+            startCameraBtn.textContent = 'Chụp Lại Ảnh';
+        }
+
+        resetBtn.addEventListener('click', () => {
+            studentNameInput.value = '';
+            studentIDInput.value = '';
+            capturedImages = 0;
+            capturedImage.parentElement.style.display = 'none';
+            submitBtn.disabled = true;
+            stopCamera();
+            updateProgress();
+            nameError.textContent = '';
+            idError.textContent = '';
+        });
+
+        document.getElementById('studentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (validateForm()) {
+                alert('Thông tin sinh viên đã được gửi thành công!');
+                // Ở đây bạn có thể thêm code để gửi dữ liệu đến server
+            }
+        });
+
+        function goToHomePage() {
+            // Thay đổi URL này thành URL thực của trang chủ của bạn
+            window.location.href = 'admin';
+        }
+        function captureImage() {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const imgData = canvas.toDataURL('image/png');
+
+    capturedImage.src = imgData;
+    capturedImage.parentElement.style.display = 'block';
+
+    // Tạo file ảnh và lưu tạm vào thư mục dự án
+    const fileName = `${studentIDInput.value}_${capturedImages}.png`;
+
+    // Lưu ảnh vào thư mục cụ thể (phụ thuộc vào xử lý backend)
+    // Gửi ảnh qua API hoặc lưu file trực tiếp (Node.js hoặc Python backend cần được cấu hình)
+    saveImageToServer(imgData, fileName);
+}
+
+function saveImageToServer(imgData, fileName) {
+    fetch('/save-image', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            image: imgData,
+            fileName: fileName,
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log('Image saved successfully:', data);
+        })
+        .catch((error) => {
+            console.error('Error saving image:', error);
+        });
+}
+
+    </script>
+</body>
+</html>

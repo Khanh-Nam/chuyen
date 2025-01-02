@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Điểm danh Sinh viên Tự động</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --background-color: #f0f4f8;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        #clockContainer {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        #userControls {
+            display: flex;
+            gap: 20px;
+        }
+
+        #userControls a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        #userControls a:hover {
+            color: var(--secondary-color);
+        }
+
+        main {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .left-panel, .right-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            padding: 20px;
+        }
+
+        .left-panel {
+            flex: 2;
+        }
+
+        .right-panel {
+            flex: 1;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        #videoContainer {
+            margin-bottom: 20px;
+        }
+
+        #videoElement {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        #faceDisplay {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Hệ thống Điểm danh Sinh viên</h1>
+                </div>
+                <div id="clockContainer">
+                    <i class="fas fa-clock"></i> <span id="currentTime">Đang tải...</span>
+                </div>
+                <div id="userControls">
+                    <a href="/profile" class="user-email">
+                        <i class="fas fa-user"></i> <span>{{ session['username'] }}</span>
+                    </a>
+                    <a href="/class_information">
+                        <i class="fas fa-chalkboard-teacher"></i> Lớp Học
+                    </a>
+                    <a href="/history">
+                        <i class="fas fa-history"></i> Lịch sử
+                    </a>
+                    <a href="/logout" id="logoutButton">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="left-panel">
+            <h2>Điểm danh Trực tiếp</h2>
+            <div id="videoContainer">
+                <video id="videoElement" autoplay></video>
+                <button id="toggleWebcamButton">Bật Camera</button>
+                <button id="toggleCheckInOutButton">Điểm danh</button>
+            </div>
+
+            <div id="resultContainer">
+                <h2>Thông tin Điểm danh</h2>
+                <table id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Tên Sinh viên</th>
+                            <th>Mã Số SV</th>
+                            <th>Độ tương đồng (%)</th>
+                            <th>Thời gian</th>
+                            <th>Tốc độ nhận diện (giây)</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu sẽ được thêm vào đây -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="section">
+                <h2>Chọn Lớp Học</h2>
+                <select id="classDropdown">
+                    <option value="">Chọn lớp học</option>
+                </select>
+
+                               <!-- Thông tin chi tiết lớp học -->
+                <div id="classDetails">
+                    <h2>Thông Tin Lớp Học</h2>
+                    <p id="className">Tên Lớp: </p>
+                    <p id="classCode">Mã Lớp: </p>
+                    <p id="faculty">Khoa: </p>
+                    <p id="teacher">Giảng Viên: </p>
+                    <p id="year">Năm Học: </p>
+                    <p id="room">Phòng Học: </p>
+                    <p id="time">Thời Gian Học: </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Thêm Sinh viên Mới</h2>
+                <form id="addStudentForm">
+                    <div class="form-group">
+                        <label for="studentName">Tên Sinh viên:</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">Mã Số Sinh viên:</label>
+                        <input type="text" id="studentId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentClass">Lớp:</label>
+                        <select id="studentClass" required>
+                            <option value="">Chọn lớp</option>
+                        </select>
+                    </div>
+                    <button type="submit">Thêm Sinh viên</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h2>Khuôn Mặt Phát Hiện</h2>
+                <img id="faceDisplay" src="" alt="Khuôn mặt" class="face-image">
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Existing JavaScript code (unchanged)
+        let webcamStream = null;
+        let videoElement = document.getElementById('videoElement');
+        let toggleWebcamButton = document.getElementById('toggleWebcamButton');
+        let toggleCheckInOutButton = document.getElementById('toggleCheckInOutButton');
+        let faceDisplay = document.getElementById('faceDisplay');
+        let faceDetected = false;
+        let detectionCountdown = null;
+        let checkInStatus = true; // Check-in by default
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const userEmail = '{{ session["username"] }}';  // Lấy email người dùng từ Flask session
+            localStorage.setItem('userEmail', userEmail);   // Lưu email vào localStorage
+            // Hiển thị email lên giao diện người dùng
+            document.querySelector('.user-email span').textContent = userEmail;
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            const userEmail = localStorage.getItem('userEmail') || 'guest@example.com';
+            document.querySelector('.user-email span').textContent = userEmail;
+            startClock(); // Initialize clock
+
+            // Handle class selection
+            const classDropdown = document.getElementById('classDropdown');
+            classDropdown.addEventListener('change', function () {
+                const selectedClass = classDropdown.value;
+                console.log('Selected Class: ', selectedClass);
+                // You can fetch or filter attendance data based on the selected class
+            });
+        });
+
+        // Logout button event
+        document.getElementById('logoutButton').addEventListener('click', function () {
+            localStorage.removeItem('userEmail');
+            window.location.href = '/login';
+        });
+
+        // Toggle webcam button
+        toggleWebcamButton.addEventListener('click', function () {
+            if (webcamStream) {
+                stopWebcam();
+            } else {
+                startWebcam();
+            }
+        });
+
+        // Toggle Check-in/Check-out
+        toggleCheckInOutButton.addEventListener('click', function () {
+            checkInStatus = !checkInStatus;
+            toggleCheckInOutButton.textContent = checkInStatus ? 'Điểm danh' : 'Điểm danh ra';
+        });
+
+        // Start webcam
+        function startWebcam() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    webcamStream = stream;
+                    videoElement.srcObject = stream;
+                    toggleWebcamButton.textContent = 'Tắt Camera';
+                    detectFace();
+                })
+                .catch(function (error) {
+                    alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập hoặc thử lại.');
+                    console.error('Lỗi camera:', error);
+                });
+        }
+
+        // Stop webcam
+        function stopWebcam() {
+            let tracks = webcamStream.getTracks();
+            tracks.forEach(track => track.stop());
+            videoElement.srcObject = null;
+            webcamStream = null;
+            toggleWebcamButton.textContent = 'Bật Camera';
+            clearInterval(detectionCountdown);
+        }
+
+        // Detect face
+        function detectFace() {
+            detectionCountdown = setInterval(function () {
+                if (!faceDetected) {
+                    faceDetected = true;
+                    console.log("Phát hiện khuôn mặt, bắt đầu đếm ngược.");
+                    startCountdownToCapture();
+                }
+            }, 1000);
+        }
+
+        let countdownActive = false;
+
+        // Countdown to capture
+        function startCountdownToCapture() {
+            if (countdownActive) {
+                return;
+            }
+
+            countdownActive = true;
+
+            let countdown = 3;
+            let countdownTimer = setInterval(function () {
+                console.log(`Chụp ảnh sau ${countdown} giây...`);
+                if (countdown <= 0) {
+                    clearInterval(countdownTimer);
+                    captureImage();
+                    faceDetected = false;
+                    countdownActive = false;
+                }
+                countdown--;
+            }, 1000);
+        }
+        // Lấy dữ liệu từ Firebase
+        function loadClassInformation() {
+            const classRef = database.ref('class_information'); // Đường dẫn tới class_information trong database
+
+            classRef.once('value')
+                .then((snapshot) => {
+                    const classData = snapshot.val();
+                    displayClassInformation(classData); // Gọi hàm hiển thị
+                })
+                .catch((error) => {
+                    console.error("Lỗi khi lấy dữ liệu lớp học:", error);
+                });
+        }
+        // Capture image
+        function captureImage() {
+            let canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            let context = canvas.getContext('2d');
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Draw a blue square around the detected face (for demonstration, position is hardcoded)
+            context.beginPath();
+            context.rect(50, 50, 200, 200); // Example coordinates for the face bounding box
+            context.lineWidth = 4;
+            context.strokeStyle = 'blue';
+            context.stroke();
+
+            let imageData = canvas.toDataURL('image/jpeg');
+            sendCapturedImage(imageData);
+        }
+
+        // Send captured image to server
+        function sendCapturedImage(imageData) {
+            fetch('/capture_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'image=' + encodeURIComponent(imageData) + '&status=' + (checkInStatus ? 'Điểm danh' : 'Điểm danh ra')
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        let newRow = `
+                        <tr>
+                            <td><img src="${data.image}" width="50" height="50" /></td>
+                            <td>${data.name}</td>
+                            <td>${data.student_id}</td>
+                            <td>${data.confidence}%</td>
+                            <td>${data.capture_time}</td>
+                            <td>${data.prediction_time} giây</td>
+                            <td>${checkInStatus ? 'Điểm danh' : 'Điểm danh ra'}</td>
+                        </tr>`;
+                        document.getElementById('attendanceTable').querySelector('tbody').insertAdjacentHTML('beforeend', newRow);
+                        faceDisplay.src = data.image;
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+        }
+
+        // Start clock
+        function startClock() {
+            setInterval(function () {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+                document.getElementById('currentTime').textContent = now.toLocaleString('vi-VN', options);
+            }, 1000);
+        }
+
+        // New code for adding students
+        document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const studentName = document.getElementById('studentName').value;
+            const studentId = document.getElementById('studentId').value;
+            const studentClass = document.getElementById('studentClass').value;
+
+            // Here you would typically send this data to your server
+            console.log('Thêm sinh viên mới:', { name: studentName, id: studentId, class: studentClass });
+
+            // For demonstration, let's just add it to the table
+            let newRow = `
+            <tr>
+                <td><img src="/placeholder.jpg" width="50" height="50" /></td>
+                <td>${studentName}</td>
+                <td>${studentId}</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>Đã thêm</td>
+            </tr>`;
+            document.getElementById('attendanceTable').querySelector('tbody').insertAdjacentHTML('beforeend', newRow);
+
+            // Clear the form
+            this.reset();
+        });
+          // Firebase Configuration
+             const firebaseConfig = {
+          apiKey: "AIzaSyAe9zs4DERK51BhRums3n2kggLxuVu5_Lo",
+          authDomain: "student-identification-s-dd4a5.firebaseapp.com",
+          databaseURL: "https://student-identification-s-dd4a5-default-rtdb.firebaseio.com",
+          projectId: "student-identification-s-dd4a5",
+          storageBucket: "student-identification-s-dd4a5.firebasestorage.app",
+          messagingSenderId: "975508315148",
+          appId: "1:975508315148:web:93588b12172dec4a90a229",
+          measurementId: "G-DRPKJD53XW"
+        };
+
+            // Initialize Firebase
+            const app = firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+
+            // Hàm lấy dữ liệu từ Firebase
+            function loadClassInformation() {
+                const classRef = database.ref('class_information'); // Đường dẫn tới dữ liệu
+
+                classRef.once('value')
+                    .then((snapshot) => {
+                        const classData = snapshot.val();
+                        populateDropdown(classData);
+                    })
+                    .catch((error) => {
+                        console.error("Lỗi khi lấy dữ liệu:", error);
+                    });
+            }
+
+            // Hàm đưa dữ liệu vào dropdown
+            function populateDropdown(classData) {
+                const classDropdown = document.getElementById('classDropdown');
+
+                for (const classId in classData) {
+                    const classInfo = classData[classId];
+                    const option = document.createElement('option');
+                    option.value = classId;
+                    option.textContent = classInfo["Tên Lớp"];
+                    classDropdown.appendChild(option);
+                }
+
+                // Xử lý khi người dùng chọn một lớp học
+                classDropdown.addEventListener('change', function () {
+                    const selectedClass = classData[this.value];
+                    if (selectedClass) {
+                        displayClassDetails(selectedClass);
+                    }
+                });
+            }
+
+            // Hàm hiển thị thông tin chi tiết lớp học
+            function displayClassDetails(classInfo) {
+                document.getElementById('className').textContent = `Tên Lớp: ${classInfo["Tên Lớp"]}`;
+                document.getElementById('classCode').textContent = `Mã Lớp: ${classInfo["Mã Lớp"]}`;
+                document.getElementById('faculty').textContent = `Khoa: ${classInfo["Khoa"]}`;
+                document.getElementById('teacher').textContent = `Giảng Viên: ${classInfo["Giảng Viên"]}`;
+                document.getElementById('year').textContent = `Năm Học: ${classInfo["Năm Học"]}`;
+                document.getElementById('room').textContent = `Phòng Học: ${classInfo["Phòng Học"]}`;
+                document.getElementById('time').textContent = `Thời Gian Học: ${classInfo["Thời Gian Học"]}`;
+            }
+
+            // Gọi hàm lấy dữ liệu khi trang được load
+            document.addEventListener('DOMContentLoaded', loadClassInformation);
+    </script>
+</body>
+</html>
